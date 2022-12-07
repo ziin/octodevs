@@ -1,0 +1,18 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: dbuser
+      POSTGRES_PASSWORD: dbpassword
+      POSTGRES_DB: gitfriends
+
+    ports:
+      - "5432:5432"
+    volumes:
+      - gitfriends:/var/lib/postgressql
+
+volumes:
+  gitfriends:
