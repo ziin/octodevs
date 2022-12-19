@@ -7,12 +7,12 @@ services:
     environment:
       POSTGRES_USER: dbuser
       POSTGRES_PASSWORD: dbpassword
-      POSTGRES_DB: gitfriends
+      POSTGRES_DB: octodevs
 
     ports:
       - "5432:5432"
     volumes:
-      - gitfriends:/var/lib/postgressql
+      - octodevs:/var/lib/postgressql
 
 volumes:
-  gitfriends:
+  octodevs:

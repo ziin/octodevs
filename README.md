@@ -1,3 +1,5 @@
-# Git Friends
+# Octodevs
 
-Git Friends is a tool to share your github profile with developers like you.
+Octodevs is a way of sharing your github profile with other developers.
+
+More updates coming soon.
