@@ -49,6 +49,25 @@ model User {
   image         String?
   accounts      Account[]
   sessions      Session[]
+  profile       Profile?
+}
+
+model Profile {
+  github String @id
+  name String?
+  avatar String?
+  bio String?
+  followers Int @default(0)
+  location String?
+  website String?
+  twitter String?
+  hireable Boolean @default(true)
+  published Boolean @default(false)
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String  @unique
+  syncedAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
 }
 
 model VerificationToken {
