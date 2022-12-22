@@ -13,6 +13,7 @@ export const profileRouter = router({
   getMany: publicProcedure.query(async ({ ctx }) => {
     return await ctx.prisma.profile.findMany({
       where: { published: true },
+      orderBy: { followers: "desc" },
     });
   }),
 
