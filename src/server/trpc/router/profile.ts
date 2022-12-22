@@ -29,7 +29,6 @@ export const profileRouter = router({
         let user = {} as UserResponse;
 
         if (hasMoreThanMinutes(profile.syncedAt, 10)) {
-          console.log("Fetching user from github api...");
           const token = await getGithubToken(ctx);
           const githubUser = await getUserFromGithub(token);
           if (!githubUser) {
@@ -146,6 +145,5 @@ function hasMoreThanMinutes(date: Date, minutes = 10) {
   const now = new Date().getTime();
   const diff = now - lastUpdated;
   const diffSeconds = Math.floor(diff / 1000 / 60);
-  console.log(diffSeconds);
   return diffSeconds > minutes;
 }

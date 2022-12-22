@@ -11,6 +11,7 @@ import { trpc } from "../utils/trpc";
 
 const Home: NextPage = () => {
   const { data: profiles } = trpc.profile.getMany.useQuery();
+
   return (
     <>
       <Head>
@@ -55,6 +56,6 @@ export const getStaticProps: GetStaticProps = async () => {
     props: {
       trpcState: ssgHelper.dehydrate(),
     },
-    revalidate: 1,
+    revalidate: 10,
   };
 };
