@@ -3,7 +3,7 @@ import superjson from "superjson";
 import { createProxySSGHelpers } from "@trpc/react-query/ssg";
 import { type NextPage } from "next";
 import Head from "next/head";
-import { Header } from "../components/Header";
+import { Header } from "../components/Header/Header";
 import { UserInfo } from "../components/UserInfo";
 import { createContextInner } from "../server/trpc/context";
 import { appRouter } from "../server/trpc/router/_app";
@@ -25,10 +25,10 @@ const Home: NextPage = () => {
       <Header />
 
       <main className="mx-auto mt-2 px-4 md:container md:max-w-4xl">
-        <ul className="flex flex-col rounded-md border border-slate-300">
+        <ul className="border-slate-300 flex flex-col rounded-md border">
           {profiles?.map((profile) => (
             <li
-              className="border-b border-b-slate-300 p-4 last:border-b-0"
+              className="border-b-slate-300 border-b p-4 last:border-b-0"
               key={profile.github}
             >
               <UserInfo profile={profile} />

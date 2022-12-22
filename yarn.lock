@@ -159,6 +159,11 @@
   resolved "https://registry.yarnpkg.com/@panva/hkdf/-/hkdf-1.0.2.tgz#bab0f09d09de9fd83628220d496627681bc440d6"
   integrity sha512-MSAs9t3Go7GUkMhpKC44T58DJ5KGk2vBo+h1cqQeqlMfdGkxaVB78ZWpv9gYi/g2fa4sopag9gJsNvS8XGgWJA==
 
+"@primer/octicons-react@^17.10.0":
+  version "17.10.0"
+  resolved "https://registry.yarnpkg.com/@primer/octicons-react/-/octicons-react-17.10.0.tgz#69753f8b6977cccb733e791c2ffc31c8f09cbfcb"
+  integrity sha512-6uJeWWPrReHNlGLlsp4bL2rmUr1mmlaKfFNTAkVnzi2Nnp8MmLhGhtdWAktXfFUOll1JF4AacrEK3j91Xq99UQ==
+
 "@prisma/client@^4.5.0":
   version "4.7.1"
   resolved "https://registry.yarnpkg.com/@prisma/client/-/client-4.7.1.tgz#66fe84aca25de17cb3d9141dec003f34714914b9"
@@ -626,6 +631,11 @@ chownr@^1.1.1:
   version "1.1.4"
   resolved "https://registry.yarnpkg.com/chownr/-/chownr-1.1.4.tgz#6fc9d7b42d32a583596337666e7d08084da2cc6b"
   integrity sha512-jJ0bqzaylmJtVnNgzTeSOs8DPavpbYgEr/b0YL8/2GO3xJEhInFmhKMUnEJQjZumK7KXGFhUy89PrsJWlakBVg==
+
+class-variance-authority@^0.4.0:
+  version "0.4.0"
+  resolved "https://registry.yarnpkg.com/class-variance-authority/-/class-variance-authority-0.4.0.tgz#2ff1b5a836a68ce7a2dac0cc12f6fdc50e47f666"
+  integrity sha512-74enNN8O9ZNieycac/y8FxqgyzZhZbxmCitAtAeUrLPlxjSd5zA7LfpprmxEcOmQBnaGs5hYhiSGnJ0mqrtBLQ==
 
 client-only@0.0.1:
   version "0.0.1"

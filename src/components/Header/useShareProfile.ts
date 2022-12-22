@@ -1,4 +1,4 @@
-import { trpc } from "../utils/trpc";
+import { trpc } from "../../utils/trpc";
 
 export function useShareProfile() {
   const { data: profile, isLoading } = trpc.profile.me.useQuery();
@@ -28,6 +28,7 @@ export function useShareProfile() {
   const isPublished = profile?.published;
 
   return {
+    profile,
     isLoading,
     isPublished,
     handlePublish,
