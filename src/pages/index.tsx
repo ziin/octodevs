@@ -12,6 +12,8 @@ import { trpc } from "../utils/trpc";
 const Home: NextPage = () => {
   const { data: profiles } = trpc.profile.getMany.useQuery();
 
+  const isEmpty = profiles?.length === 0;
+
   return (
     <>
       <Head>
@@ -26,22 +28,31 @@ const Home: NextPage = () => {
       <Header />
 
       <main className="mx-auto mt-2 cursor-default px-4 md:container md:max-w-4xl">
-        <div className="flex flex-col rounded-md border border-gray-600">
-          <div className="flex items-baseline justify-between border-b border-b-gray-600 bg-gray-700/50 py-2 px-4">
-            <p className="font-medium text-gray-300">Developers</p>
-            <p className="text-xs">Ordered by number of followers</p>
+        {isEmpty ? (
+          <div className="text-center">
+            <p className="text-2xl font-medium text-gray-300">
+              No profiles found
+            </p>
+            <p>Be the first to share your github profile</p>
           </div>
-          <ul>
-            {profiles?.map((profile) => (
-              <li
-                className="border-b border-b-gray-600 p-4 last:border-b-0"
-                key={profile.github}
-              >
-                <UserInfo profile={profile} />
-              </li>
-            ))}
-          </ul>
-        </div>
+        ) : (
+          <div className="flex flex-col rounded-md border border-gray-600">
+            <div className="flex items-baseline justify-between border-b border-b-gray-600 bg-gray-700/50 py-2 px-4">
+              <p className="font-medium text-gray-300">Developers</p>
+              <p className="text-xs">Ordered by number of followers</p>
+            </div>
+            <ul>
+              {profiles?.map((profile) => (
+                <li
+                  className="border-b border-b-gray-600 p-4 last:border-b-0"
+                  key={profile.github}
+                >
+                  <UserInfo profile={profile} />
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
       </main>
     </>
   );
