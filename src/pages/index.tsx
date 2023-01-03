@@ -44,7 +44,7 @@ const Home: NextPage = () => {
             <ul>
               {profiles?.map((profile) => (
                 <li
-                  className="border-b border-b-gray-600 p-4 last:border-b-0"
+                  className="border-b border-b-gray-600 bg-gray-800 p-4 last:border-b-0"
                   key={profile.github}
                 >
                   <UserInfo profile={profile} />
