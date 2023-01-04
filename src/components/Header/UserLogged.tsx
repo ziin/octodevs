@@ -16,18 +16,16 @@ export const UserLogged = ({ user: { image, name } }: UserLoggedProps) => {
 
   return (
     <div className="flex flex-col items-center gap-2">
-      <p className="text-center">
-        {image && (
-          <Image
-            className="rounded-full"
-            src={image}
-            width="64"
-            height="64"
-            alt="User avatar"
-          />
-        )}
-        <span className="text-[20px] font-semibold">{userName}</span>
-      </p>
+      {image && (
+        <Image
+          className="rounded-full"
+          src={image}
+          width="64"
+          height="64"
+          alt="User avatar"
+        />
+      )}
+      <span className="text-[20px] font-semibold">{userName}</span>
       <>
         <Button
           variant={isPublished ? "danger" : "default"}
