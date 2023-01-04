@@ -35,7 +35,7 @@ export const Header = () => {
 };
 
 const HeaderLayout = ({ children }: PropsWithChildren) => (
-  <header className="my-8 flex cursor-default flex-col items-center">
+  <header className="mt-8 mb-4 flex cursor-default flex-col items-center">
     <h1 className="mb-2 text-3xl font-semibold text-gray-300">Octodevs</h1>
     {children}
   </header>
