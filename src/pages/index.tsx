@@ -27,7 +27,7 @@ const Home: NextPage = () => {
 
       <Header />
 
-      <main className="mx-auto mt-2 cursor-default px-4 md:container md:max-w-4xl">
+      <main className="mx-auto mt-2 mb-8 cursor-default px-4 md:container md:max-w-4xl">
         {isEmpty ? (
           <div className="text-center">
             <p className="text-2xl font-medium text-gray-300">
