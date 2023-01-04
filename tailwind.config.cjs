@@ -24,7 +24,11 @@ module.exports = {
         200: "#F2716B",
       },
     },
-    extend: {},
+    extend: {
+      backgroundImage: {
+        worldmap: "url('/map.png')",
+      },
+    },
   },
   plugins: [],
 };

@@ -2,18 +2,21 @@ import { LinkIcon, LocationIcon, PeopleIcon } from "@primer/octicons-react";
 import type { Profile } from "@prisma/client";
 import Image from "next/image";
 
-export const UserInfo = ({ profile }: UserInfoProps) => {
+export const UserInfo = ({ profile, position }: UserInfoProps) => {
   return (
     <div className="flex gap-4">
-      {profile.avatar && (
-        <Image
-          className="h-fit rounded-full"
-          src={profile?.avatar}
-          width="48"
-          height="48"
-          alt=""
-        />
-      )}
+      <div className="flex flex-col items-center gap-2">
+        {profile.avatar && (
+          <Image
+            className="h-fit rounded-full"
+            src={profile?.avatar}
+            width="48"
+            height="48"
+            alt=""
+          />
+        )}
+        <p className="text-sm font-semibold">{position}º</p>
+      </div>
       <div className="flex w-full flex-col gap-4 md:flex-row md:gap-8">
         <div className="min-w-[50%] max-w-[45ch]">
           <a
@@ -62,6 +65,7 @@ export const UserInfo = ({ profile }: UserInfoProps) => {
 
 type UserInfoProps = {
   profile: Omit<Profile, "userId">;
+  position: number;
 };
 
 const Info = ({

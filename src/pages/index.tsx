@@ -36,22 +36,22 @@ const Home: NextPage = () => {
             <p>Be the first to share your github profile</p>
           </div>
         ) : (
-          <div className="flex flex-col rounded-md border border-gray-600">
-            <div className="flex items-baseline justify-between border-b border-b-gray-600 bg-gray-700/50 py-2 px-4">
-              <p className="font-medium text-gray-300">Developers</p>
+          <>
+            <div className="flex items-baseline justify-between py-2 px-4">
+              <p className="font-medium">Developers</p>
               <p className="text-xs">Ordered by number of followers</p>
             </div>
-            <ul>
-              {profiles?.map((profile) => (
+            <ul className="flex flex-col overflow-hidden rounded-md border border-gray-600">
+              {profiles?.map((profile, index) => (
                 <li
-                  className="border-b border-b-gray-600 bg-gray-800 p-4 last:border-b-0"
+                  className="border-b border-b-gray-600 bg-gray-800/80 p-4 last:border-b-0"
                   key={profile.github}
                 >
-                  <UserInfo profile={profile} />
+                  <UserInfo profile={profile} position={index + 1} />
                 </li>
               ))}
             </ul>
-          </div>
+          </>
         )}
       </main>
     </>
