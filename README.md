@@ -8,6 +8,7 @@ Octodevs is a simple web app that allows you to share your GitHub profile with o
 - [Next.js](https://nextjs.org/) - The web framework
 - [React](https://reactjs.org/) - The UI library
 - [Tailwind CSS](https://tailwindcss.com/) - CSS framework
+- [CVA](https://github.com/joe-bell/cva) - Class Variance Authority
 - [NextAuth.js](https://next-auth.js.org/) - Authentication
 - [tRPC](https://trpc.io/) - Type-safe API layer
 - [Prisma](https://www.prisma.io/) - Database ORM
