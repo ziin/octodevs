@@ -11,10 +11,60 @@ export const profileRouter = router({
   }),
 
   getMany: publicProcedure.query(async ({ ctx }) => {
-    return await ctx.prisma.profile.findMany({
-      where: { published: true },
+    const profiles = await ctx.prisma.profile.findMany({
+      where: {
+        published: true,
+      },
       orderBy: { followers: "desc" },
     });
+
+    // Check if the profiles are older than 24 hours
+    const profilesToSync = profiles.filter((profile) =>
+      hasMoreThanMinutes(profile.syncedAt, 60 * 24),
+    );
+
+    if (profilesToSync.length === 0) {
+      return profiles;
+    }
+
+    // Sync the profiles with github api
+    const users = await Promise.all(
+      profilesToSync.map(async (profile) => {
+        const user = await getGithubUserByUsername(profile.github);
+        return user;
+      }),
+    );
+
+    const syncedProfiles = users.map((user) => {
+      return {
+        ...mapGithubUserToProfile(user as UserResponse),
+        syncedAt: new Date(),
+      };
+    });
+
+    // update on db
+    const updated = await Promise.all(
+      syncedProfiles.map(async (profile) =>
+        ctx.prisma.profile.update({
+          where: { github: profile.github },
+          data: profile,
+        }),
+      ),
+    );
+
+    // combine and sort
+    const combined = [...profiles, ...updated].reduce((acc, current) => {
+      const x = acc.find((item) => item.github === current.github);
+      if (!x) {
+        return acc.concat([current]);
+      } else {
+        return acc;
+      }
+    }, [] as typeof updated);
+
+    const sorted = combined.sort((a, b) => b.followers - a.followers);
+
+    return sorted;
   }),
 
   publish: protectedProcedure.mutation(async ({ ctx }) => {
@@ -26,6 +76,7 @@ export const profileRouter = router({
         },
       });
 
+      // Sync the profile if it's older than 10 minutes
       if (profile) {
         let user = {} as UserResponse;
 
@@ -122,6 +173,22 @@ async function getUserFromGithub(token: string): Promise<UserResponse | null> {
       headers: {
         accept: "application/vnd.github+json",
         authorization: `Bearer ${token}`,
+        "X-GitHub-Api-Version": "2022-11-28",
+      },
+    });
+    return await response.json();
+  } catch (error) {
+    return null;
+  }
+}
+
+async function getGithubUserByUsername(
+  username: string,
+): Promise<UserResponse | null> {
+  try {
+    const response = await fetch(`https://api.github.com/users/${username}`, {
+      headers: {
+        accept: "application/vnd.github+json",
         "X-GitHub-Api-Version": "2022-11-28",
       },
     });
