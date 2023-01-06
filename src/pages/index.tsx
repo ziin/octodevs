@@ -26,6 +26,9 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
+      {/* Background image */}
+      <div className="fixed right-0 left-0 z-[-1] my-0 mx-auto aspect-[2.06] min-h-[500px] w-full max-w-[1400px] bg-gray-900 bg-worldmap bg-cover bg-top bg-no-repeat bg-blend-soft-light" />
+
       {/* Contribute button */}
       <div className="absolute top-0 right-0 inline-block w-14 overflow-hidden">
         <a
