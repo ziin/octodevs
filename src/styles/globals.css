@@ -3,5 +3,5 @@
 @tailwind utilities;
 
 body {
-  @apply bg-gray-900 bg-worldmap bg-cover bg-center bg-no-repeat text-gray-500 bg-blend-soft-light;
+  @apply bg-gray-900 text-gray-500;
 }
