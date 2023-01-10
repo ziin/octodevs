@@ -1,3 +1,4 @@
+import type { Profile } from "@prisma/client";
 import type { Context } from "../context";
 import { router, protectedProcedure, publicProcedure } from "../trpc";
 
@@ -30,7 +31,7 @@ export const profileRouter = router({
     // Sync the profiles with github api
     const users = await Promise.all(
       profilesToSync.map(async (profile) => {
-        const user = await getGithubUserByUsername(profile.github);
+        const user = await fetchGithubUserWithUsername(profile.github);
         return user;
       }),
     );
@@ -69,62 +70,29 @@ export const profileRouter = router({
 
   publish: protectedProcedure.mutation(async ({ ctx }) => {
     try {
-      // check if the user has a profile stored
+      // Check if the user has a profile stored
       const profile = await ctx.prisma.profile.findFirst({
-        where: {
-          userId: ctx.session?.user?.id,
-        },
+        where: { userId: ctx.session?.user?.id },
       });
 
-      // Sync the profile if it's older than 10 minutes
-      if (profile) {
-        let user = {} as UserResponse;
+      let user = {} as UserResponse;
 
-        if (hasMoreThanMinutes(profile.syncedAt, 10)) {
-          const token = await getGithubToken(ctx);
-          const githubUser = await getUserFromGithub(token);
-          if (!githubUser) {
-            throw new Error("Fail to fetch user from github api");
-          }
-          user = githubUser;
-        }
-
-        await ctx.prisma.profile.update({
-          where: {
-            userId: ctx.session?.user?.id,
-          },
-          data: {
-            published: true,
-            syncedAt: new Date(),
-            ...mapGithubUserToProfile(user),
-          },
-        });
-
-        return profile;
-      }
-
-      // if the profile doesn't exist, create it
+      // if not, create and return a new one
       if (!profile) {
         const token = await getGithubToken(ctx);
-        const user = await getUserFromGithub(token);
-
-        if (!user) {
-          throw new Error("Fail to fetch user from github api");
-        }
-
-        const newProfile = await ctx.prisma.profile.create({
-          data: {
-            userId: ctx.session?.user?.id,
-            published: true,
-            ...mapGithubUserToProfile(user),
-          },
-        });
-
-        return newProfile;
+        user = await fetchGithubUser(token);
+        return createProfile(ctx, user);
       }
+
+      // sync the profile if it's older than 10 minutes
+      if (hasMoreThanMinutes(profile.syncedAt, 10)) {
+        const token = await getGithubToken(ctx);
+        user = await fetchGithubUser(token);
+      }
+
+      return updateProfileSynced(ctx, user);
     } catch (error) {
-      console.log(error);
-      return null;
+      throw new Error("Error while publishing profile.");
     }
   }),
 
@@ -135,6 +103,37 @@ export const profileRouter = router({
     });
   }),
 });
+
+async function updateProfileSynced(ctx: Context, user: UserResponse) {
+  return await ctx.prisma.profile.update({
+    where: { userId: ctx.session?.user?.id },
+    data: {
+      published: true,
+      syncedAt: new Date(),
+      ...mapGithubUserToProfile(user),
+    },
+  });
+}
+
+async function createProfile(ctx: Context, user: UserResponse) {
+  return await ctx.prisma.profile.create({
+    data: {
+      user: {
+        connect: { id: ctx.session?.user?.id },
+      },
+      published: true,
+      ...mapGithubUserToProfile(user),
+    },
+  });
+}
+
+async function fetchGithubUser(token: string) {
+  const githubUser = await fetchGithubUserWithToken(token);
+  if (!githubUser) {
+    throw new Error("Fail to fetch user from github api");
+  }
+  return githubUser;
+}
 
 function mapGithubUserToProfile(user: UserResponse) {
   return {
@@ -167,7 +166,9 @@ export interface UserResponse {
   followers: number;
 }
 
-async function getUserFromGithub(token: string): Promise<UserResponse | null> {
+async function fetchGithubUserWithToken(
+  token: string,
+): Promise<UserResponse | null> {
   try {
     const response = await fetch("https://api.github.com/user", {
       headers: {
@@ -182,7 +183,7 @@ async function getUserFromGithub(token: string): Promise<UserResponse | null> {
   }
 }
 
-async function getGithubUserByUsername(
+async function fetchGithubUserWithUsername(
   username: string,
 ): Promise<UserResponse | null> {
   try {
