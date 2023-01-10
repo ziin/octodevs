@@ -12,60 +12,22 @@ export const profileRouter = router({
   }),
 
   getMany: publicProcedure.query(async ({ ctx }) => {
-    const profiles = await ctx.prisma.profile.findMany({
-      where: {
-        published: true,
-      },
-      orderBy: { followers: "desc" },
-    });
+    try {
+      const profiles = await ctx.prisma.profile.findMany({
+        where: {
+          published: true,
+        },
+        orderBy: { followers: "desc" },
+      });
 
-    // Check if the profiles are older than 24 hours
-    const profilesToSync = profiles.filter((profile) =>
-      hasMoreThanMinutes(profile.syncedAt, 60 * 24),
-    );
+      const syncedProfiles = await fetchAndSyncProfiles(profiles);
+      const updated = await updateSyncedProfiles(ctx, syncedProfiles);
+      const result = combineAndSort(profiles, updated);
 
-    if (profilesToSync.length === 0) {
-      return profiles;
+      return result;
+    } catch (error) {
+      throw new Error(`An error occurred`);
     }
-
-    // Sync the profiles with github api
-    const users = await Promise.all(
-      profilesToSync.map(async (profile) => {
-        const user = await fetchGithubUserWithUsername(profile.github);
-        return user;
-      }),
-    );
-
-    const syncedProfiles = users.map((user) => {
-      return {
-        ...mapGithubUserToProfile(user as UserResponse),
-        syncedAt: new Date(),
-      };
-    });
-
-    // update on db
-    const updated = await Promise.all(
-      syncedProfiles.map(async (profile) =>
-        ctx.prisma.profile.update({
-          where: { github: profile.github },
-          data: profile,
-        }),
-      ),
-    );
-
-    // combine and sort
-    const combined = [...profiles, ...updated].reduce((acc, current) => {
-      const x = acc.find((item) => item.github === current.github);
-      if (!x) {
-        return acc.concat([current]);
-      } else {
-        return acc;
-      }
-    }, [] as typeof updated);
-
-    const sorted = combined.sort((a, b) => b.followers - a.followers);
-
-    return sorted;
   }),
 
   publish: protectedProcedure.mutation(async ({ ctx }) => {
@@ -215,4 +177,59 @@ function hasMoreThanMinutes(date: Date, minutes = 10) {
   const diff = now - lastUpdated;
   const diffSeconds = Math.floor(diff / 1000 / 60);
   return diffSeconds > minutes;
+}
+
+function isProfileOutdated(profile: Profile) {
+  const MINUTES_IN_24_HOURS = 1440;
+  return hasMoreThanMinutes(profile.syncedAt, MINUTES_IN_24_HOURS);
+}
+
+async function fetchAndSyncProfiles(profiles: Profile[]) {
+  const profilesToSync = profiles.filter(isProfileOutdated);
+
+  if (profilesToSync.length === 0) {
+    return profiles;
+  }
+
+  const users = await Promise.all(
+    profilesToSync.map(async (profile) => {
+      const user = await fetchGithubUserWithUsername(profile.github);
+      return user;
+    }),
+  );
+
+  const syncedProfiles = users.map((user) => {
+    return {
+      ...mapGithubUserToProfile(user as UserResponse),
+      syncedAt: new Date(),
+    };
+  });
+
+  return syncedProfiles as Profile[];
+}
+
+/**
+ * Update synced profiles on db
+ **/
+async function updateSyncedProfiles(ctx: Context, syncedProfiles: Profile[]) {
+  const updated = await Promise.all(
+    syncedProfiles.map(async (profile) =>
+      ctx.prisma.profile.update({
+        where: { github: profile.github },
+        data: profile,
+      }),
+    ),
+  );
+  return updated;
+}
+
+/**
+ * Combine profiles and sort by followers
+ */
+function combineAndSort(profiles: Profile[], updated: Profile[]) {
+  const combined = new Map<string, Profile>();
+  for (const profile of [...profiles, ...updated]) {
+    combined.set(profile.github, profile);
+  }
+  return [...combined.values()].sort((a, b) => b.followers - a.followers);
 }
