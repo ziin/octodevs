@@ -16,16 +16,11 @@ export function useShareProfile() {
         if (prev !== undefined && profile) {
           const newProfile = { ...profile, published: true };
           utils.profile.me.setData(undefined, newProfile);
-          utils.profile.getMany.setData(
-            undefined,
-            [...prev, newProfile].sort((a, b) => b.followers - a.followers),
-          );
         }
 
         return { prev };
       },
-      onError: (err, newProfile, context) => {
-        utils.profile.getMany.setData(undefined, context?.prev);
+      onError: () => {
         utils.profile.me.setData(undefined, profile);
       },
       onSettled: () => {
@@ -43,16 +38,11 @@ export function useShareProfile() {
 
         if (prev !== undefined && profile) {
           utils.profile.me.setData(undefined, { ...profile, published: false });
-          utils.profile.getMany.setData(
-            undefined,
-            prev.filter((p) => p.userId !== profile.userId),
-          );
         }
 
         return { prev };
       },
-      onError: (err, newProfile, context) => {
-        utils.profile.getMany.setData(undefined, context?.prev);
+      onError: () => {
         utils.profile.me.setData(undefined, profile);
       },
       onSettled: () => {

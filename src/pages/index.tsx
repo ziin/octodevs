@@ -9,11 +9,32 @@ import { createContextInner } from "../server/trpc/context";
 import { appRouter } from "../server/trpc/router/_app";
 import { trpc } from "../utils/trpc";
 import { MarkGithubIcon } from "@primer/octicons-react";
+import { useInView } from "react-intersection-observer";
+import { useEffect } from "react";
 
 const Home: NextPage = () => {
-  const { data: profiles } = trpc.profile.getMany.useQuery();
+  const {
+    data: profiles,
+    fetchNextPage,
+    isFetchingNextPage,
+  } = trpc.profile.getMany.useInfiniteQuery(
+    {
+      limit: 8,
+    },
+    {
+      getNextPageParam: (lastPage) => lastPage.nextCursor,
+    },
+  );
 
-  const isEmpty = profiles?.length === 0;
+  const { ref, inView } = useInView();
+
+  useEffect(() => {
+    if (inView) {
+      fetchNextPage();
+    }
+  }, [inView, fetchNextPage]);
+
+  const isEmpty = profiles?.pages?.length === 0;
 
   return (
     <>
@@ -58,15 +79,21 @@ const Home: NextPage = () => {
               <p className="text-xs">Ordered by number of followers</p>
             </div>
             <ul className="flex flex-col overflow-hidden rounded-md border border-gray-600">
-              {profiles?.map((profile, index) => (
-                <li
-                  className="border-b border-b-gray-600 bg-gray-800/80 p-4 last:border-b-0"
-                  key={profile.github}
-                >
-                  <UserInfo profile={profile} position={index + 1} />
-                </li>
-              ))}
+              {profiles?.pages?.map((page) =>
+                page.profiles.map((profile, index) => (
+                  <li
+                    className="border-b border-b-gray-600 bg-gray-800/80 p-4 last:border-b-0"
+                    key={profile.github}
+                  >
+                    <UserInfo profile={profile} position={index + 1} />
+                  </li>
+                )),
+              )}
             </ul>
+
+            <div className="mt-4 text-center text-xs" ref={ref}>
+              <h2>{isFetchingNextPage && `Fetching more...`}</h2>
+            </div>
           </>
         )}
       </main>
@@ -83,7 +110,7 @@ export const getStaticProps: GetStaticProps = async () => {
     transformer: superjson, // optional - adds superjson serialization
   });
 
-  await ssgHelper.profile.getMany.prefetch();
+  await ssgHelper.profile.getMany.prefetchInfinite({ limit: 8 });
 
   return {
     props: {
