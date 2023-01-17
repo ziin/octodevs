@@ -4,7 +4,7 @@ import Image from "next/image";
 import { Button } from "../Button";
 import { useShareProfile } from "./useShareProfile";
 
-export const UserLogged = ({ user: { image, name } }: UserLoggedProps) => {
+export const UserInfo = ({ user: { image, name } }: UserInfoProps) => {
   const { handlePublish, isPublished, isLoading, profile } = useShareProfile();
 
   // Uses the first name if the user didn't share their profile yet
@@ -42,6 +42,6 @@ export const UserLogged = ({ user: { image, name } }: UserLoggedProps) => {
   );
 };
 
-type UserLoggedProps = {
+type UserInfoProps = {
   user: User;
 };

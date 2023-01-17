@@ -2,7 +2,7 @@ import { LocationIcon, PeopleIcon } from "@primer/octicons-react";
 import type { Profile } from "@prisma/client";
 import Image from "next/image";
 
-export const UserInfo = ({ profile, position }: UserInfoProps) => {
+export const ProfileItem = ({ profile, position }: ProfileItemProps) => {
   return (
     <div className="flex gap-4">
       {/* photo & position */}
@@ -69,7 +69,7 @@ export const UserInfo = ({ profile, position }: UserInfoProps) => {
   );
 };
 
-type UserInfoProps = {
+type ProfileItemProps = {
   profile: Omit<Profile, "userId">;
   position: number;
 };
