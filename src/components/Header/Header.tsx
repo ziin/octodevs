@@ -1,40 +1,35 @@
-import { signIn, useSession } from "next-auth/react";
-import { Button } from "../Button";
-import { UserLogged } from "./UserLogged";
-import { LogoGithubIcon } from "@primer/octicons-react";
+import { useSession } from "next-auth/react";
+import { UserLogged } from "./UserInfo";
 import type { PropsWithChildren } from "react";
+import { UserSignIn } from "./UserSignin";
 
 export const Header = () => {
   const { data: session, status } = useSession();
 
   if (status === "loading") {
     return (
-      <HeaderLayout>
+      <Wrapper>
         <p>Loading...</p>
-      </HeaderLayout>
+      </Wrapper>
+    );
+  }
+
+  if (!session?.user) {
+    return (
+      <Wrapper>
+        <UserSignIn />
+      </Wrapper>
     );
   }
 
   return (
-    <HeaderLayout>
-      {session?.user ? (
-        <UserLogged user={session.user} />
-      ) : (
-        <>
-          <p className="mb-4 max-w-sm text-center">
-            Share your Github profile with us!
-          </p>
-
-          <Button onClick={() => signIn("github", { callbackUrl: "/" })}>
-            Sign in with <LogoGithubIcon />
-          </Button>
-        </>
-      )}
-    </HeaderLayout>
+    <Wrapper>
+      <UserLogged user={session.user} />
+    </Wrapper>
   );
 };
 
-const HeaderLayout = ({ children }: PropsWithChildren) => (
+const Wrapper = ({ children }: PropsWithChildren) => (
   <header className="mt-8 mb-4 flex cursor-default flex-col items-center">
     <h1 className="mb-2 text-3xl font-semibold text-gray-300">Octodevs</h1>
     {children}

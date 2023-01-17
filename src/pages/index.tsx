@@ -2,107 +2,18 @@ import type { GetStaticProps } from "next";
 import superjson from "superjson";
 import { createProxySSGHelpers } from "@trpc/react-query/ssg";
 import { type NextPage } from "next";
-import Head from "next/head";
 import { Header } from "../components/Header/Header";
-import { UserInfo } from "../components/UserInfo";
 import { createContextInner } from "../server/trpc/context";
 import { appRouter } from "../server/trpc/router/_app";
-import { trpc } from "../utils/trpc";
-import { MarkGithubIcon } from "@primer/octicons-react";
-import { useInView } from "react-intersection-observer";
-import { useEffect } from "react";
-
-const PAGE_SIZE = 8;
+import { MainLayout } from "../layouts/main";
+import { ProfileList } from "../components/Profiles/ProfileList";
 
 const Home: NextPage = () => {
-  const {
-    data: profiles,
-    fetchNextPage,
-    isFetchingNextPage,
-  } = trpc.profile.getPaginated.useInfiniteQuery(
-    {
-      limit: PAGE_SIZE,
-    },
-    {
-      getNextPageParam: (lastPage) => lastPage.nextCursor,
-    },
-  );
-
-  const { ref, inView } = useInView();
-
-  useEffect(() => {
-    if (inView) {
-      fetchNextPage();
-    }
-  }, [inView, fetchNextPage]);
-
-  const isEmpty = profiles?.pages?.length === 0;
-
   return (
-    <>
-      <Head>
-        <title>Octodevs</title>
-        <meta
-          name="description"
-          content="Octodevs - Share your github profile"
-        />
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-
-      {/* Background image */}
-      <div className="fixed right-0 left-0 z-[-1] my-0 mx-auto aspect-[2.06] min-h-[500px] w-full max-w-[1400px] bg-gray-900 bg-worldmap bg-cover bg-top bg-no-repeat bg-blend-soft-light" />
-
-      {/* Contribute button */}
-      <div className="absolute top-0 right-0 inline-block w-14 overflow-hidden">
-        <a
-          className="flex h-20 origin-top-left -rotate-45 transform items-center bg-[#0c0d0e] p-1 text-gray-300 hover:text-gray-200"
-          target="_blank"
-          href="https://github.com/ziin/octodevs"
-          rel="noreferrer"
-        >
-          <MarkGithubIcon className="rotate-90 transform" size={24} />
-        </a>
-      </div>
-
+    <MainLayout>
       <Header />
-
-      <main className="mx-auto mt-2 mb-8 cursor-default px-4 md:container md:max-w-4xl">
-        {isEmpty ? (
-          <div className="text-center">
-            <p className="text-2xl font-medium text-gray-300">
-              No profiles found
-            </p>
-            <p>Be the first to share your github profile</p>
-          </div>
-        ) : (
-          <>
-            <div className="flex items-baseline justify-between py-2 px-4">
-              <p className="font-medium">Developers</p>
-              <p className="text-xs">Ordered by number of followers</p>
-            </div>
-            <ul className="flex flex-col overflow-hidden rounded-md border border-gray-600">
-              {profiles?.pages?.map((page, pageIndex) =>
-                page.profiles.map((profile, profileIndex) => (
-                  <li
-                    className="border-b border-b-gray-600 bg-gray-800/80 p-4 last:border-b-0"
-                    key={profile.github}
-                  >
-                    <UserInfo
-                      profile={profile}
-                      position={PAGE_SIZE * pageIndex + profileIndex + 1}
-                    />
-                  </li>
-                )),
-              )}
-            </ul>
-
-            <div className="mt-4 text-center text-xs" ref={ref}>
-              <h2>{isFetchingNextPage && `Fetching more...`}</h2>
-            </div>
-          </>
-        )}
-      </main>
-    </>
+      <ProfileList />
+    </MainLayout>
   );
 };
 
