@@ -1,7 +1,7 @@
 import { useSession } from "next-auth/react";
-import { UserLogged } from "./UserInfo";
 import type { PropsWithChildren } from "react";
-import { UserSignIn } from "./UserSignin";
+import { UserInfo } from "./UserInfo";
+import { UserSignIn } from "./UserSignIn";
 
 export const Header = () => {
   const { data: session, status } = useSession();
@@ -24,7 +24,7 @@ export const Header = () => {
 
   return (
     <Wrapper>
-      <UserLogged user={session.user} />
+      <UserInfo user={session.user} />
     </Wrapper>
   );
 };
