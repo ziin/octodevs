@@ -8,10 +8,10 @@ export function useShareProfile() {
   const { mutate: publish, isLoading: isPublishing } =
     trpc.profile.publish.useMutation({
       onMutate: () => {
-        utils.profile.getMany.cancel();
+        utils.profile.getPaginated.cancel();
         utils.profile.me.cancel();
 
-        const prev = utils.profile.getMany.getData();
+        const prev = utils.profile.getPaginated.getData();
 
         if (prev !== undefined && profile) {
           const newProfile = { ...profile, published: true };
@@ -25,16 +25,16 @@ export function useShareProfile() {
       },
       onSettled: () => {
         utils.profile.me.invalidate();
-        utils.profile.getMany.invalidate();
+        utils.profile.getPaginated.invalidate();
       },
     });
   const { mutate: unpublish, isLoading: isUnpublishing } =
     trpc.profile.unpublish.useMutation({
       onMutate: () => {
-        utils.profile.getMany.cancel();
+        utils.profile.getPaginated.cancel();
         utils.profile.me.cancel();
 
-        const prev = utils.profile.getMany.getData();
+        const prev = utils.profile.getPaginated.getData();
 
         if (prev !== undefined && profile) {
           utils.profile.me.setData(undefined, { ...profile, published: false });
@@ -47,7 +47,7 @@ export function useShareProfile() {
       },
       onSettled: () => {
         utils.profile.me.invalidate();
-        utils.profile.getMany.invalidate();
+        utils.profile.getPaginated.invalidate();
       },
     });
 

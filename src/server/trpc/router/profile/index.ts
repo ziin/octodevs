@@ -12,7 +12,7 @@ export const profileRouter = router({
     });
   }),
 
-  getMany: publicProcedure
+  getPaginated: publicProcedure
     .input(
       z.object({
         limit: z.number().min(1).max(50).nullish(),

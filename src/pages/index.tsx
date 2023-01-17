@@ -19,7 +19,7 @@ const Home: NextPage = () => {
     data: profiles,
     fetchNextPage,
     isFetchingNextPage,
-  } = trpc.profile.getMany.useInfiniteQuery(
+  } = trpc.profile.getPaginated.useInfiniteQuery(
     {
       limit: PAGE_SIZE,
     },
@@ -115,7 +115,7 @@ export const getStaticProps: GetStaticProps = async () => {
     transformer: superjson, // optional - adds superjson serialization
   });
 
-  await ssgHelper.profile.getMany.prefetchInfinite({ limit: 8 });
+  await ssgHelper.profile.getPaginated.prefetchInfinite({ limit: 8 });
 
   return {
     props: {
