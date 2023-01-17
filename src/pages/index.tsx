@@ -12,6 +12,8 @@ import { MarkGithubIcon } from "@primer/octicons-react";
 import { useInView } from "react-intersection-observer";
 import { useEffect } from "react";
 
+const PAGE_SIZE = 8;
+
 const Home: NextPage = () => {
   const {
     data: profiles,
@@ -19,7 +21,7 @@ const Home: NextPage = () => {
     isFetchingNextPage,
   } = trpc.profile.getMany.useInfiniteQuery(
     {
-      limit: 8,
+      limit: PAGE_SIZE,
     },
     {
       getNextPageParam: (lastPage) => lastPage.nextCursor,
@@ -79,13 +81,16 @@ const Home: NextPage = () => {
               <p className="text-xs">Ordered by number of followers</p>
             </div>
             <ul className="flex flex-col overflow-hidden rounded-md border border-gray-600">
-              {profiles?.pages?.map((page) =>
-                page.profiles.map((profile, index) => (
+              {profiles?.pages?.map((page, pageIndex) =>
+                page.profiles.map((profile, profileIndex) => (
                   <li
                     className="border-b border-b-gray-600 bg-gray-800/80 p-4 last:border-b-0"
                     key={profile.github}
                   >
-                    <UserInfo profile={profile} position={index + 1} />
+                    <UserInfo
+                      profile={profile}
+                      position={PAGE_SIZE * pageIndex + profileIndex + 1}
+                    />
                   </li>
                 )),
               )}
