@@ -25,7 +25,7 @@ export const UserInfo = ({ profile, position }: UserInfoProps) => {
           <a
             href={`https://github.com/${profile.github}`}
             target="_blank"
-            className="text-xl font-semibold leading-4 text-gray-300 hover:underline"
+            className="text-xl font-semibold leading-6 text-gray-300 hover:underline"
             rel="noreferrer"
           >
             {profile.name ?? profile.github}
