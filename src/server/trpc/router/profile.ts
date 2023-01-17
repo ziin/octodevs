@@ -1,15 +1,21 @@
-import { router, protectedProcedure, publicProcedure } from "../../trpc";
-import z from "zod";
-import * as u from "./utils";
 import { TRPCError } from "@trpc/server";
+import { router, protectedProcedure, publicProcedure } from "../trpc";
+import z from "zod";
 
 export const profileRouter = router({
   me: protectedProcedure.query(async ({ ctx }) => {
-    return await ctx.prisma.profile.findFirst({
-      where: {
-        userId: ctx.session.user.id,
-      },
-    });
+    try {
+      return await ctx.prisma.profile.findFirst({
+        where: {
+          userId: ctx.session.user.id,
+        },
+      });
+    } catch (error) {
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: "Error getting profile",
+      });
+    }
   }),
 
   getPaginated: publicProcedure
@@ -52,22 +58,29 @@ export const profileRouter = router({
 
   publish: protectedProcedure.mutation(async ({ ctx }) => {
     try {
-      let profile = await u.findAndSyncProfile(ctx);
-      if (!profile) {
-        const token = await u.getGithubToken(ctx);
-        const user = await u.fetchGithubUser(token);
-        profile = await u.createProfile(ctx, user);
-      }
-      return profile;
+      await ctx.prisma.profile.update({
+        data: { published: true },
+        where: { userId: ctx.session?.user?.id },
+      });
     } catch (error) {
-      throw new Error("Error while publishing profile");
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: "Error publishing profile",
+      });
     }
   }),
 
   unpublish: protectedProcedure.mutation(async ({ ctx }) => {
-    await ctx.prisma.profile.update({
-      data: { published: false },
-      where: { userId: ctx.session?.user?.id },
-    });
+    try {
+      await ctx.prisma.profile.update({
+        data: { published: false },
+        where: { userId: ctx.session?.user?.id },
+      });
+    } catch (error) {
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: "Error unpublishing profile",
+      });
+    }
   }),
 });
