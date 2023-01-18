@@ -1,6 +1,8 @@
 # Octodevs
 
-Octodevs is a simple web app that allows you to share your GitHub profile with other developers.
+Octodevs is a simple web app for sharing your GitHub profile with other developers.
+
+I made this project to try some libraries and tools. You can check what I used down below.
 
 ## Built With
 
@@ -19,10 +21,7 @@ Octodevs is a simple web app that allows you to share your GitHub profile with o
 - [GitHub API](https://developer.github.com/v3/) - Used to fetch user data
 - [PlanetScale](https://planetscale.com/) - Database hosting
 - [Vercel](https://vercel.com/) - Deployment
-
-## Contributors
-
-- [ziin](https://github.com/ziin)
+- [Upstash](https://upstash.com/) - Schedule profiles sync with Github
 
 ## License
 
