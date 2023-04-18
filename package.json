@@ -23,7 +23,7 @@
     "@upstash/qstash": "^0.3.3",
     "class-variance-authority": "^0.4.0",
     "next": "13.1.2",
-    "next-auth": "4.18.8",
+    "next-auth": "4.20.1",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-intersection-observer": "^9.4.1",
